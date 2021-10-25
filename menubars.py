@@ -20,7 +20,7 @@ class MenuBars:
     window.edit_menu.add_cascade(label="Quantisize", command=window.quantization)
     window.edit_menu.add_cascade(label="Negative", command=window.invertNegative)
     window.edit_menu.add_cascade(label="Increase Brightness", command=lambda: window.modifyBrightness(30))
-    window.edit_menu.add_cascade(label="Decrease Brightness", command=lambda: window.modifyBrightness(30))
+    window.edit_menu.add_cascade(label="Decrease Brightness", command=lambda: window.modifyBrightness(-30))
     window.edit_menu.add_cascade(label="Clear Edits", command=window.clearEdits)
 
     window.window['menu'] = window.m

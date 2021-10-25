@@ -102,9 +102,15 @@ class App:
     hsv = cv2.cvtColor(self.img2, cv2.COLOR_RGB2HSV)
     h, s, v = cv2.split(hsv)
 
-    lim = 255 - value
-    v[v > lim] = 255
-    v[v <= lim] += value
+    if value >= 0:
+      lim = 255 - value
+      v[v > lim] = 255
+      v[v <= lim] += value
+    else:
+      value = abs(value)
+      lim = 0 + value
+      v[v < lim] = 0
+      v[v >= lim] -= value
 
     final_hsv = cv2.merge((h, s, v))
     self.img2 = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2RGB)
