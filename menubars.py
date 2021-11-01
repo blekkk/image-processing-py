@@ -29,8 +29,24 @@ class MenuBars:
     window.menu_edit.add_cascade(label="Band Pass Filter", command=window.bandPassFilter)
     window.menu_edit.add_cascade(label="Clear Edits", command=window.clearEdits)
 
-    window.menu_mode.add_cascade(label="Mode 1", command=lambda: window.changeDisplayMode(1))
+    window.menu_mode.add_cascade(label="Mode 1", command=lambda: window.changeDisplayMode(1), state="disabled")
     window.menu_mode.add_cascade(label="Mode 2", command=lambda: window.changeDisplayMode(2))
 
     window.window['menu'] = window.m
+
+  @staticmethod
+  def disableModeOne(self):
+    self.menu_mode.entryconfig("Mode 1", state="disabled")
+
+  @staticmethod
+  def enableModeOne(self):
+    self.menu_mode.entryconfig("Mode 1", state="normal")
+
+  @staticmethod
+  def disableModeTwo(self):
+    self.menu_mode.entryconfig("Mode 2", state="disabled")
+
+  @staticmethod
+  def enableModeTwo(self):
+    self.menu_mode.entryconfig("Mode 2", state="normal")
 

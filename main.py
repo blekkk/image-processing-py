@@ -25,6 +25,9 @@ class App:
     self.histogramFigure = plt.Figure(figsize=(6,6), dpi=100)
     self.histogramCanvas = FigureCanvasTkAgg(self.histogramFigure, self.window)
 
+    self.modeOneStatus = 1
+    self.modeTwoStatus = 0
+
     MenuBars(self)
 
     self.window.mainloop()
@@ -181,11 +184,15 @@ class App:
   def changeDisplayMode(self, mode):
     self.displayMode = mode
     if self.displayMode == 1:
+      MenuBars.disableModeOne(self)
+      MenuBars.enableModeTwo(self)
       self.histogramCanvas.get_tk_widget().pack_forget()
       self.labelRight = Label(self.window, image=self.photo)
       self.labelRight.image = self.photo
       self.labelRight.pack(side="right", padx=10, pady=10)
     elif self.displayMode == 2:
+      MenuBars.disableModeTwo(self)
+      MenuBars.enableModeOne(self)
       self.labelRight.pack_forget()
     self.displayImage()
   
