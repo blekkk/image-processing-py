@@ -32,6 +32,8 @@ class App:
 
     self.window.mainloop()
 
+  # Utility functions
+
   def openfn(self):
     filename = filedialog.askopenfilename(title='Open an image', filetypes=[('Image files','*.jpg *.jpeg *.png *.bmp *.tiff *.svg *.gif')])
     return filename
@@ -56,6 +58,64 @@ class App:
       self.labelRight = Label(self.window, image=self.photo)
       self.labelRight.image = self.photo
       self.labelRight.pack(side="right", padx=10, pady=10)
+
+  def clearEdits(self):
+    self.modifiableImage = cv2.cvtColor(cv2.imread(self.x), cv2.COLOR_BGR2RGB)
+    self.displayImage()
+
+  def displayOnLeftLabel(self, image):
+    self.photo2 = Image.fromarray(image)
+    self.photo2.thumbnail(self.size, Image.ANTIALIAS)
+    self.photo2 = ImageTk.PhotoImage(image = self.photo2)
+
+    self.labelLeft.configure(image=self.photo2)
+    self.labelLeft.image = self.photo2 
+
+  def displayOnRightLabel(self, image):
+    self.photo = Image.fromarray(image)
+    self.photo.thumbnail(self.size, Image.ANTIALIAS)
+    self.photo = ImageTk.PhotoImage(image = self.photo)
+
+    self.labelRight.configure(image=self.photo)
+    self.labelRight.image = self.photo
+
+  def displayImage(self):
+    if self.displayMode == 1:
+      self.displayOnLeftLabel(self.ORIGINAL_IMAGE)
+      self.displayOnRightLabel(self.modifiableImage)
+    elif self.displayMode == 2:
+      self.displayOnLeftLabel(self.modifiableImage)
+      self.showHistogram(self.modifiableImage)
+
+  def changeDisplayMode(self, mode):
+    self.displayMode = mode
+    if self.displayMode == 1:
+      MenuBars.disableModeOne(self)
+      MenuBars.enableModeTwo(self)
+      self.histogramCanvas.get_tk_widget().pack_forget()
+      self.labelRight = Label(self.window, image=self.photo)
+      self.labelRight.image = self.photo
+      self.labelRight.pack(side="right", padx=10, pady=10)
+    elif self.displayMode == 2:
+      MenuBars.disableModeTwo(self)
+      MenuBars.enableModeOne(self)
+      self.labelRight.pack_forget()
+    self.displayImage()
+  
+  def showHistogram(self, image):
+    self.histogramCanvas.get_tk_widget().pack_forget()
+    subplot = 221
+
+    self.histogramFigure = Figure(figsize=(6,6), dpi=100)
+
+    for i, color in enumerate(['r', 'g', 'b']):
+      self.histogramFigure.add_subplot(subplot).plot(cv2.calcHist([image],[i],None,[256],[0,256]), color = color)
+      subplot = subplot + 1
+    
+    self.histogramCanvas = FigureCanvasTkAgg(self.histogramFigure, self.window)
+    self.histogramCanvas.get_tk_widget().pack(side="right")
+
+  # Image modification functions
 
   def increaseColorValue(self, color, value=30):
     lim = 255
@@ -136,6 +196,15 @@ class App:
 
     self.displayImage()
 
+  def equalize(self):
+    channels = cv2.split(self.modifiableImage)
+    eq_channels = []
+    for ch, color in zip(channels, ['R', 'G', 'B']):
+        eq_channels.append(cv2.equalizeHist(ch))
+
+    self.modifiableImage = cv2.merge(eq_channels)
+    self.displayImage()
+
   def lowPassFilter(self):
     kernel = np.ones((5,5),np.float32)/25
     self.modifiableImage = cv2.filter2D(self.modifiableImage,-1,kernel)
@@ -161,70 +230,4 @@ class App:
     self.modifiableImage = cv2.filter2D(self.modifiableImage,-1,kernel)
     
     self.displayImage()
-
-  def clearEdits(self):
-    self.modifiableImage = cv2.cvtColor(cv2.imread(self.x), cv2.COLOR_BGR2RGB)
-    self.displayImage()
-
-  def displayOnLeftLabel(self, image):
-    self.photo2 = Image.fromarray(image)
-    self.photo2.thumbnail(self.size, Image.ANTIALIAS)
-    self.photo2 = ImageTk.PhotoImage(image = self.photo2)
-
-    self.labelLeft.configure(image=self.photo2)
-    self.labelLeft.image = self.photo2 
-
-  def displayOnRightLabel(self, image):
-    self.photo = Image.fromarray(image)
-    self.photo.thumbnail(self.size, Image.ANTIALIAS)
-    self.photo = ImageTk.PhotoImage(image = self.photo)
-
-    self.labelRight.configure(image=self.photo)
-    self.labelRight.image = self.photo
-
-  def displayImage(self):
-    if self.displayMode == 1:
-      self.displayOnLeftLabel(self.ORIGINAL_IMAGE)
-      self.displayOnRightLabel(self.modifiableImage)
-    elif self.displayMode == 2:
-      self.displayOnLeftLabel(self.modifiableImage)
-      self.showHistogram(self.modifiableImage)
-
-  def changeDisplayMode(self, mode):
-    self.displayMode = mode
-    if self.displayMode == 1:
-      MenuBars.disableModeOne(self)
-      MenuBars.enableModeTwo(self)
-      self.histogramCanvas.get_tk_widget().pack_forget()
-      self.labelRight = Label(self.window, image=self.photo)
-      self.labelRight.image = self.photo
-      self.labelRight.pack(side="right", padx=10, pady=10)
-    elif self.displayMode == 2:
-      MenuBars.disableModeTwo(self)
-      MenuBars.enableModeOne(self)
-      self.labelRight.pack_forget()
-    self.displayImage()
-  
-  def showHistogram(self, image):
-    self.histogramCanvas.get_tk_widget().pack_forget()
-    subplot = 221
-
-    self.histogramFigure = Figure(figsize=(6,6), dpi=100)
-
-    for i, color in enumerate(['r', 'g', 'b']):
-      self.histogramFigure.add_subplot(subplot).plot(cv2.calcHist([image],[i],None,[256],[0,256]), color = color)
-      subplot = subplot + 1
-    
-    self.histogramCanvas = FigureCanvasTkAgg(self.histogramFigure, self.window)
-    self.histogramCanvas.get_tk_widget().pack(side="right")
-
-  def equalize(self):
-    channels = cv2.split(self.modifiableImage)
-    eq_channels = []
-    for ch, color in zip(channels, ['R', 'G', 'B']):
-        eq_channels.append(cv2.equalizeHist(ch))
-
-    self.modifiableImage = cv2.merge(eq_channels)
-    self.displayImage()
-
 App(Tk(), "Image Processing")
