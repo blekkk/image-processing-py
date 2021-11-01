@@ -19,14 +19,14 @@ class App:
     # Initialize panel for displaying image
     self.labelLeft = None
     self.labelRight = None
-    self.canvasRight = None
+
+    # Initialize panel for histogram
+    self.histogramFigure = Figure(figsize=(6,6), dpi=100)
+    self.histogramCanvas = FigureCanvasTkAgg(self.histogramFigure, self.window)
+    
+    # size and mode
     self.size = [900, 900]
     self.displayMode = 1
-    self.histogramFigure = plt.Figure(figsize=(6,6), dpi=100)
-    self.histogramCanvas = FigureCanvasTkAgg(self.histogramFigure, self.window)
-
-    self.modeOneStatus = 1
-    self.modeTwoStatus = 0
 
     MenuBars(self)
 
@@ -57,13 +57,22 @@ class App:
       self.labelRight.image = self.photo
       self.labelRight.pack(side="right", padx=10, pady=10)
 
+  def increaseColorValue(self, color, value=30):
+    lim = 255
+    self.modifiableImage[:,:,color] = np.clip(self.modifiableImage[:,:,color]+value, 0, lim)
+    self.displayImage()
+
+  def decreaseColorValue(self, color, value=30):
+    lim = 0
+    self.modifiableImage[:,:,color] = np.clip(self.modifiableImage[:,:,color]-value, lim, 255)
+    self.displayImage()
+
   def scaleImage(self, percent):
     scale_percent = percent
     self.height, self.width, no_channels = self.modifiableImage.shape
     self.width = int(self.width * (scale_percent / 100))
     self.height = int(self.height * (scale_percent / 100))
     dim = (self.width, self.height)
-    print(dim)
       
     npImg = np.array(self.modifiableImage)
     resized = cv2.resize(npImg, dim, interpolation = cv2.INTER_NEAREST)
@@ -200,7 +209,7 @@ class App:
     self.histogramCanvas.get_tk_widget().pack_forget()
     subplot = 221
 
-    self.histogramFigure = plt.Figure(figsize=(6,6), dpi=100)
+    self.histogramFigure = Figure(figsize=(6,6), dpi=100)
 
     for i, color in enumerate(['r', 'g', 'b']):
       self.histogramFigure.add_subplot(subplot).plot(cv2.calcHist([image],[i],None,[256],[0,256]), color = color)

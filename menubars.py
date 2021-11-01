@@ -8,6 +8,9 @@ class MenuBars:
     window.menu_edit = Menu(window.m)
     window.menu_mode = Menu(window.m)
     window.submenu_image = Menu(window.m)
+    window.submenu_elementary = Menu(window.m)
+    window.sub_submenu_rgb_increase = Menu(window.m)
+    window.sub_submenu_rgb_decrease = Menu(window.m)
 
     window.m.add_cascade(menu=window.menu_file, label="File")
     window.m.add_cascade(menu=window.menu_edit, label="Edit")
@@ -15,6 +18,17 @@ class MenuBars:
 
     window.menu_file.add_cascade(label="Image", menu=window.submenu_image)
     window.submenu_image.add_command(label="New Image", command=window.open_img)
+
+    window.menu_edit.add_cascade(label="Elementary Operation", menu=window.submenu_elementary)
+    window.submenu_elementary.add_cascade(label="Increase", menu=window.sub_submenu_rgb_increase)
+    window.submenu_elementary.add_cascade(label="Decrease", menu=window.sub_submenu_rgb_decrease)
+
+    window.sub_submenu_rgb_increase.add_cascade(label="Red", command= lambda:window.increaseColorValue(0))
+    window.sub_submenu_rgb_increase.add_cascade(label="Green", command= lambda:window.increaseColorValue(1))
+    window.sub_submenu_rgb_increase.add_cascade(label="Blue", command= lambda:window.increaseColorValue(2))
+    window.sub_submenu_rgb_decrease.add_cascade(label="Red", command= lambda:window.decreaseColorValue(0))
+    window.sub_submenu_rgb_decrease.add_cascade(label="Green", command= lambda:window.decreaseColorValue(1))
+    window.sub_submenu_rgb_decrease.add_cascade(label="Blue", command= lambda:window.decreaseColorValue(2))
 
     window.menu_edit.add_cascade(label="Downscale", command= lambda: window.scaleImage(50))
     window.menu_edit.add_cascade(label="Upscale", command= lambda: window.scaleImage(200))
