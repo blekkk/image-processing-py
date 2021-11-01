@@ -24,6 +24,9 @@ class MenuBars:
     window.menu_edit.add_cascade(label="Increase Brightness", command=lambda: window.modifyBrightness(30))
     window.menu_edit.add_cascade(label="Decrease Brightness", command=lambda: window.modifyBrightness(-30))
     window.menu_edit.add_cascade(label="Equalize", command=window.equalize)
+    window.menu_edit.add_cascade(label="Low Pass Filter", command=window.lowPassFilter)
+    window.menu_edit.add_cascade(label="High Pass Filter", command=window.highPassFilter)
+    window.menu_edit.add_cascade(label="Band Pass Filter", command=window.bandPassFilter)
     window.menu_edit.add_cascade(label="Clear Edits", command=window.clearEdits)
 
     window.menu_mode.add_cascade(label="Mode 1", command=lambda: window.changeDisplayMode(1))

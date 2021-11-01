@@ -20,9 +20,9 @@ class App:
     self.labelLeft = None
     self.labelRight = None
     self.canvasRight = None
-    self.size = [1000, 1000]
+    self.size = [900, 900]
     self.displayMode = 1
-    self.histogramFigure = plt.Figure(figsize=(4,4), dpi=100)
+    self.histogramFigure = plt.Figure(figsize=(6,6), dpi=100)
     self.histogramCanvas = FigureCanvasTkAgg(self.histogramFigure, self.window)
 
     MenuBars(self)
@@ -124,6 +124,32 @@ class App:
 
     self.displayImage()
 
+  def lowPassFilter(self):
+    kernel = np.ones((5,5),np.float32)/25
+    self.modifiableImage = cv2.filter2D(self.modifiableImage,-1,kernel)
+
+    self.displayImage()
+
+  def highPassFilter(self):
+    kernel = np.array([[0.0, -1.0, 0.0], 
+                      [-1.0, 4.0, -1.0],
+                      [0.0, -1.0, 0.0]])
+    kernel = kernel/(np.sum(kernel) if np.sum(kernel)!=0 else 1)
+
+    self.modifiableImage = cv2.filter2D(self.modifiableImage,-1,kernel)
+
+    self.displayImage()
+
+  def bandPassFilter(self):
+    kernel = np.array([[0, -1, 0], 
+                      [-1, 5, -1],
+                      [0, -1, 0]])
+    kernel = kernel/(np.sum(kernel) if np.sum(kernel)!=0 else 1)
+
+    self.modifiableImage = cv2.filter2D(self.modifiableImage,-1,kernel)
+    
+    self.displayImage()
+
   def clearEdits(self):
     self.modifiableImage = cv2.cvtColor(cv2.imread(self.x), cv2.COLOR_BGR2RGB)
     self.displayImage()
@@ -167,7 +193,7 @@ class App:
     self.histogramCanvas.get_tk_widget().pack_forget()
     subplot = 221
 
-    self.histogramFigure = plt.Figure(figsize=(4,4), dpi=100)
+    self.histogramFigure = plt.Figure(figsize=(6,6), dpi=100)
 
     for i, color in enumerate(['r', 'g', 'b']):
       self.histogramFigure.add_subplot(subplot).plot(cv2.calcHist([image],[i],None,[256],[0,256]), color = color)
